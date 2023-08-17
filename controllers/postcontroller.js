@@ -1,11 +1,24 @@
 const Post = require("../models/postmodel");
+const cloudinary = require("cloudinary").v2;
+
+const cloudinaryUpload = async (file, folder) => {
+  const options = { folder };
+  options.resourse_type = "auto";
+  return await cloudinary.uploader.upload(file.tempFilePath, options);
+};
 
 exports.createPost = async (request, response) => {
   try {
-    const { title, body } = request.body;
+    const { title, body, tags } = request.body;
+    const file = request.files.imageFile;
+
+    const res = await cloudinaryUpload(file, "Blogging");
+
     const post = new Post({
       title,
       body,
+      tags,
+      imageUrl: res.secure_url,
     });
     const savedPost = await post.save();
 

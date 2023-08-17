@@ -23,6 +23,15 @@ const postSchema = new mongoose.Schema({
       ref: "Comment",
     },
   ],
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+
+  tags: {
+    type: [String],
+  },
+
   createdAt: {
     type: Date,
     default: Date.now(),
