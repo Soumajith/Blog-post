@@ -1,12 +1,20 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
+
+const cloudinaryUpload = async (file, folder) => {
+  const options = { folder };
+  options.resource_type = "auto";
+  return await cloudinary.uploader.upload(file.tempFilePath, options);
+};
 
 exports.signup = async (request, response) => {
   try {
-    const { name, email, password, role } = request.body;
+    const { name, email, password, contactNumber, profession, hobbies } =
+      request.body;
+    const file = request.files.imageFile;
     const existingUser = await User.findOne({ email });
 
     // check existing user
@@ -16,7 +24,6 @@ exports.signup = async (request, response) => {
         message: "Account already exist",
       });
     }
-
     // created hashed password
     let hashedPassword;
     try {
@@ -28,12 +35,16 @@ exports.signup = async (request, response) => {
       });
     }
 
+    const res = await cloudinaryUpload(file, "Profile");
     // Create user object
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role,
+      contactNumber,
+      hobbies,
+      profession,
+      imageUrl: res.secure_url,
     });
 
     // final resposne

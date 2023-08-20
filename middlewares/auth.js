@@ -35,21 +35,3 @@ exports.auth = (request, response, next) => {
     });
   }
 };
-
-exports.isStudent = (request, response, next) => {
-  try {
-    if (request.user.role !== "Student") {
-      return response.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-    next();
-  } catch (err) {
-    console.log(err);
-    return response.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-};
